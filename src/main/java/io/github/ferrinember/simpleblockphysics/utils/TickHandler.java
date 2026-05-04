@@ -53,7 +53,13 @@ public class TickHandler {
     public void onLevelTick(TickEvent.LevelTickEvent event) {
 
         if (!event.level.isClientSide() && event.level.getServer() != null && event.level.getDayTime() % 20L == 1L) {
-
+        //Adds a max time for each falling block entity to exist. This acts as a middle ground between the remove on fall and regular physics
+           fallingSet.forEach(fallingBlockEntity -> {
+               if (fallingBlockEntity.tickCount >= Config.fallingBlockMaxTime) {
+                   fallingBlockEntity.kill();
+               }
+            });
+            
             for (ServerPlayer player : event.level.getServer().getPlayerList().getPlayers()) {
                 BlockPos blockPos = player.getOnPos();
                 if (event.level.dimension().equals(player.level().dimension()) && !player.gameMode.getGameModeForPlayer().equals(GameType.SPECTATOR) && event.level.getBlockState(blockPos).blocksMotion() && !Config.indestructibleBlocks.contains(event.level.getBlockState(blockPos).getBlock()) && !checkMap.containsKey(blockPos) && Config.allowedDimensions.contains(event.level.dimension())) {
